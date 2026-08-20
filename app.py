@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 import json
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 # ==========================================
 # CONFIGURAÇÃO GERAL
@@ -70,7 +70,9 @@ def buscar_dados_ao_vivo():
     for chave, leituras in dados.items():
         for leitura in leituras:
             timestamp_ms = leitura['ts']
-            data_hora = datetime.fromtimestamp(timestamp_ms / 1000.0)
+            # Força o fuso horário para UTC-3 (Brasil) e limpa a formatação
+            fuso_brasil = timezone(timedelta(hours=-3))
+            data_hora = datetime.fromtimestamp(timestamp_ms / 1000.0, tz=fuso_brasil).replace(tzinfo=None)
             valor = leitura['value']
             
             # Se for um pacote aninhado (como as métricas de eficiência)
